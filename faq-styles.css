@@ -1,0 +1,134 @@
+@import url("https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700&display=swap");
+
+/* Reset e estilo geral */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  font-family: 'Kumbh Sans', sans-serif;
+  background: linear-gradient(135deg, #000000, #333333);
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+main {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.faq {
+  background-color: #000000; /* Mudei para preto */
+  box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
+  padding: 20px;
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.faq .ilustracao { 
+  width: 50%;
+  max-width: 300px;
+  margin-bottom: 20px;
+}
+
+.faq .conteudo {
+  width: 100%;
+  text-align: left;
+}
+
+.faq h1 {
+  color: #ff6600;
+  font-size: 28px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.item {
+  list-style: none;
+}
+
+.itens {
+  border-bottom: 1px solid #ff6600;
+  padding: 15px 0;
+  cursor: pointer;
+}
+
+.itens:last-child {
+  border-bottom: none;
+}
+
+.itens .pergunta {
+  font-size: 18px;
+  color: #ff6600;
+  transition: color 0.2s;
+}
+
+.itens .pergunta:hover {
+  color: #ffffff;
+}
+
+.itens .resposta {
+  display: none;
+  color: #cccccc;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.itens.ativo .resposta {
+  display: block;
+}
+
+/* Efeitos de responsividade */
+@media (max-width: 768px) {
+  .faq {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .faq .ilustracao {
+    width: 60%;
+    margin-bottom: 30px;
+  }
+
+  .faq h1 {
+    font-size: 24px;
+  }
+
+  .itens .pergunta {
+    font-size: 16px;
+  }
+
+  .itens .resposta {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 425px) {
+  .faq {
+    width: 100%;
+  }
+
+  .faq h1 {
+    font-size: 20px;
+  }
+
+  .itens .pergunta {
+    font-size: 14px;
+  }
+
+  .itens .resposta {
+    font-size: 12px;
+  }
+}
