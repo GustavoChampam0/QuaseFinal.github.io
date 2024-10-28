@@ -24,26 +24,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function carregarProdutos(page = 1) {
         try {
+            // Carregar produtos locais primeiro
             const produtosJSON = await fetch('./produtosfinais.json').then(res => res.json());
             todosProdutos = [...produtosJSON.results];
 
-            for (const categoria of categoriasAPI) {
+            // Exibir imediatamente os produtos locais
+            atualizarProdutos(page);
+
+            // Carregar produtos da API de forma assíncrona em paralelo
+            const requests = categoriasAPI.map(async (categoria) => {
                 const apiUrl = `https://api.mercadolibre.com/sites/MLB/search?category=${categoria.category_id}&seller_id=${categoria.seller_id}`;
                 const response = await fetch(apiUrl);
                 const data = await response.json();
                 todosProdutos = [...todosProdutos, ...data.results];
-            }
+                atualizarProdutos(currentPage);  // Atualizar a lista de produtos a cada nova categoria carregada
+            });
 
-            const produtosFiltrados = aplicarFiltros(todosProdutos);
-            totalPages = Math.ceil(produtosFiltrados.length / produtosPorPagina);
-            const produtosPagina = produtosFiltrados.slice((page - 1) * produtosPorPagina, page * produtosPorPagina);
-
-            if (produtosPagina.length > 0) {
-                exibirProdutos(produtosPagina);
-                gerarPaginacao();
-            } else {
-                produtosLista.innerHTML = '<p>Nenhum produto encontrado.</p>';
-            }
+            await Promise.all(requests);  // Esperar o carregamento de todas as categorias da API
         } catch (error) {
             console.error('Erro ao carregar produtos:', error);
             produtosLista.innerHTML = '<p>Erro ao carregar os produtos. Tente novamente mais tarde.</p>';
@@ -73,12 +70,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    function atualizarProdutos(page) {
+        const produtosFiltrados = aplicarFiltros(todosProdutos);
+        totalPages = Math.ceil(produtosFiltrados.length / produtosPorPagina);
+        const produtosPagina = produtosFiltrados.slice((page - 1) * produtosPorPagina, page * produtosPorPagina);
+
+        if (produtosPagina.length > 0) {
+            exibirProdutos(produtosPagina);
+            gerarPaginacao();
+        } else {
+            produtosLista.innerHTML = '<p>Nenhum produto encontrado.</p>';
+        }
+    }
+
     function exibirProdutos(produtos) {
         produtosLista.innerHTML = '';
         produtos.forEach(produto => {
             const produtoElement = document.createElement('div');
             produtoElement.classList.add('produto', 'col-md-4');
-            
+
             const imgUrl = produto.thumbnail.replace('I.jpg', 'B.jpg');
 
             produtoElement.innerHTML = `
@@ -118,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 currentPage = isNaN(selectedPage) ? Math.min(totalPages, currentPage + 1) : selectedPage;
 
-                carregarProdutos(currentPage);
+                atualizarProdutos(currentPage);
             });
         });
     }
@@ -128,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const selectedPrice = document.querySelector('input[name="price"]:checked');
             filtrosAtuais.price = selectedPrice ? selectedPrice.value : "";
             currentPage = 1;
-            carregarProdutos(currentPage);
+            atualizarProdutos(currentPage);
         });
     }
 
@@ -137,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
             filtrosAtuais = {};
             currentPage = 1;
             document.querySelectorAll('input[name="price"]').forEach(input => { input.checked = false; });
-            carregarProdutos(currentPage);
+            atualizarProdutos(currentPage);
         });
     }
 
@@ -146,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             filtrosAtuais.query = searchInput.value.trim();
             currentPage = 1;
-            carregarProdutos(currentPage);
+            atualizarProdutos(currentPage);
         });
     }
 
